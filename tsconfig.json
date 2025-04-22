@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "target": "ES2016", // Ou uma versão mais recente como ES2020, ESNext
+    "module": "CommonJS", // Módulo padrão para Node.js com Express
+    "outDir": "./dist", // Pasta onde o JavaScript compilado será salvo
+    "rootDir": "./src", // Pasta onde está seu código TypeScript fonte
+    "strict": true, // Habilita todas as checagens estritas de tipo (recomendado)
+    "esModuleInterop": true, // Permite interoperabilidade com módulos CommonJS
+    "skipLibCheck": true, // Pula a verificação de tipos de arquivos de declaração (.d.ts)
+    "forceConsistentCasingInFileNames": true, // Garante consistência no nome dos arquivos
+    "resolveJsonModule": true, // Permite importar arquivos .json
+    /* Module Resolution Options */
+    "moduleResolution": "node", // Como o TS procura módulos
+    "baseUrl": ".", // Base para resolução de caminhos não relativos (opcional)
+    "paths": { // Mapeamento de caminhos (opcional, útil para imports mais limpos)
+      "@/*": [
+        "src/*"
+      ]
+    },
+    /* Source Map Options */
+    // "sourceMap": true, // Gera source maps para debugging (útil)
+    /* Experimental Options */
+    // "experimentalDecorators": true, // Necessário para decorators (usado em frameworks como NestJS)
+    // "emitDecoratorMetadata": true, // Necessário para metadados com decorators
+  },
+  "include": [
+    "src/**/*" // Inclui todos os arquivos dentro da pasta src
+  ],
+  "exclude": [
+    "node_modules", // Exclui a pasta node_modules
+    "**/*.spec.ts", // Exclui arquivos de teste (se você usar essa extensão)
+    "dist" // Exclui a pasta de saída
+  ]
+}
