@@ -19,7 +19,7 @@ const config = {
 
     jwt: {
         secret: getEnvVariable('JWT_SECRET'),
-        expiresIn: '1d',
+        expiresIn: getEnvVariable('JWT_EXPIRES_IN', '1d') as string | number,
     },
 
     api: {
