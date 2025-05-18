@@ -18,12 +18,16 @@ describe('UserService - register', () => {
             name: 'Test User',
             email: 'test@example.com',
             password: 'password123',
+            matricula: '2020202020115',
+            instituicao: 'IFCE - Campus Crato',
         };
 
         mockUserObject = {
             _id: new Types.ObjectId(),
             name: mockUserData.name,
             email: mockUserData.email,
+            instituicao: mockUserData.instituicao,
+            matricula: mockUserData.matricula,
             role: 'user',
             isActive: true,
             createdAt: new Date(),

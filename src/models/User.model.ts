@@ -4,6 +4,8 @@ export interface IUser extends Document {
     _id: Types.ObjectId | string;
     name: string;
     email: string;
+    matricula: string;
+    instituicao: string;
     password?: string;
     role: 'user' | 'admin' | 'moderator';
     isActive: boolean;
@@ -23,6 +25,16 @@ const UserSchema: Schema<IUser> = new Schema(
         name: { 
             type: String, 
             required: [true, 'O nome é obrigatório.'],
+            trim: true,
+        },
+        matricula: { 
+            type: String, 
+            required: [true, 'A matrícula é obrigatório.'],
+            trim: true,
+        },
+        instituicao: { 
+            type: String, 
+            required: [true, 'O nome da instituição é obrigatório.'],
             trim: true,
         },
         email: {
@@ -81,5 +93,5 @@ UserSchema.methods.comparePassword = async function (
     return bcrypt.compare(candidatePassword, this.password);
 };
 
-const UserModel = mongoose.model<IUser, IUserModel>('User', UserSchema);
+const UserModel = mongoose.model<IUser, IUserModel>('Users', UserSchema);
 export default UserModel;
