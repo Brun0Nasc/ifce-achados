@@ -4,7 +4,9 @@ export interface IUser extends Document {
     name: string;
     email: string;
     password?: string;
-    role?: string;
+    role: 'user' | 'admin' | 'moderator';
+    isActive: boolean;
+    lastLogin: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -15,19 +17,36 @@ export interface IUserModel extends Model<IUser> {
 
 const UserSchema: Schema<IUser> = new Schema(
     {
-        name: { type: String, required: true },
+        name: { 
+            type: String, 
+            required: [true, 'O nome é obrigatório.'],
+            trim: true,
+        },
         email: {
             type: String,
-            required: true,
+            required: [true, 'O e-mail é obrigatório.'],
             unique: true,
             lowercase: true,
             trim: true,
+            match: [/.+\@.+\..+/, 'Por favor, insira um email válido.'],
         },
         password: {
             type: String,
-            required: true,
+            required: [true, 'A senha é obrigatória.'],
             select: false,
         },
+        role: {
+            type: String,
+            enum: ['user', 'admin', 'moderator'],
+            default: 'user',
+        },
+        isActive: {
+            type: Boolean,
+            default: true,
+        },
+        lastLogin: {
+            type: Date,
+        }
     },
     {
         timestamps: true,
