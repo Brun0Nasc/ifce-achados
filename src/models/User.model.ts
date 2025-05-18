@@ -1,11 +1,14 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
+import mongoose, { Schema, Document, Model, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 export interface IUser extends Document {
+    _id: Types.ObjectId | string;
     name: string;
     email: string;
     password?: string;
     role: 'user' | 'admin' | 'moderator';
     isActive: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
     lastLogin: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }

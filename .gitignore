@@ -17,3 +17,5 @@ node_modules/
 # Sistema Operacional
 .DS_Store
 Thumbs.db
+
+coverage/
