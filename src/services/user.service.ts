@@ -1,7 +1,7 @@
 import mongoose, { Types } from "mongoose";
 import jwt from "jsonwebtoken";
 import config from "../config";
-import UserModel, { IUser } from "../models/User.model"; // Seu User Model
+import UserModel, { IUser } from "../models/User.model";
 
 export interface RegisterUserDto {
   name: string;
@@ -28,45 +28,58 @@ export class UserService {
   public async register(userData: RegisterUserDto): Promise<RegisteredUser> {
     const { name, email, password, instituicao, matricula } = userData;
 
-    const existingUser = await UserModel.findOne({ email });
-    if (existingUser) {
+    console.info(`[REGISTER] Iniciando registro de usuário: ${email}`);
+
+    // Verifica duplicidade por email
+    const existingEmail = await UserModel.findOne({ email });
+    if (existingEmail) {
+      console.warn(`[REGISTER] Email já cadastrado: ${email}`);
       throw new Error("Email já cadastrado.");
     }
 
-    const newUserDocument = new UserModel({
+    // Opcional: verifica duplicidade por matrícula
+    const existingMatricula = await UserModel.findOne({ matricula });
+    if (existingMatricula) {
+      console.warn(`[REGISTER] Matrícula já cadastrada: ${matricula}`);
+      throw new Error("Matrícula já cadastrada.");
+    }
+
+    const newUser = new UserModel({
       name,
       email,
       password,
       instituicao,
       matricula,
     });
-    await newUserDocument.save();
 
-    // Gerar token de confirmação de e-mail
-    const token = jwt.sign({ userId: newUserDocument._id }, config.jwt.secret, {
+    await newUser.save();
+    console.info(`[REGISTER] Usuário criado com sucesso: ${email}`);
+
+    // Gera token de confirmação
+    const token = jwt.sign({ userId: newUser._id }, config.jwt.secret, {
       expiresIn: "1d",
     });
 
-    const confirmLink = `http://localhost:3000/users/confirm?token=${token}`;
-    console.log("📨 Link de confirmação de e-mail:", confirmLink);
+    const confirmBaseUrl = config.baseUrl || "http://localhost:3000";
+    const confirmLink = `${confirmBaseUrl}/users/confirm?token=${token}`;
+    console.info(`[REGISTER] Link de confirmação: ${confirmLink}`);
 
-    const userObject = newUserDocument.toObject<IUser>(); // Use <IUser> para melhor tipagem do toObject
+    // Aqui você chamaria um serviço de envio de e-mail futuramente
+    // await EmailService.sendConfirmation(email, confirmLink);
 
-    // A forma como você estava construindo o objeto já era boa para criar um POJO.
-    // A questão era a definição do tipo RegisteredUser.
-    const registeredUser: RegisteredUser = {
-      _id: userObject._id, // _id vem do userObject
+    const userObject = newUser.toObject<IUser>();
+
+    return {
+      _id: userObject._id,
       name: userObject.name,
       email: userObject.email,
       instituicao: userObject.instituicao,
       matricula: userObject.matricula,
       role: userObject.role,
       isActive: userObject.isActive,
-      createdAt: userObject.createdAt, // Adicionado
-      updatedAt: userObject.updatedAt, // Adicionado
-      lastLogin: userObject.lastLogin, // Se existir
+      createdAt: userObject.createdAt,
+      updatedAt: userObject.updatedAt,
+      lastLogin: userObject.lastLogin,
     };
-
-    return registeredUser;
   }
 }
