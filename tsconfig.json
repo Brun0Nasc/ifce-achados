@@ -19,7 +19,7 @@
       ]
     },
     /* Source Map Options */
-    // "sourceMap": true, // Gera source maps para debugging (útil)
+     "sourceMap": true, // Gera source maps para debugging (útil)
     /* Experimental Options */
     // "experimentalDecorators": true, // Necessário para decorators (usado em frameworks como NestJS)
     // "emitDecoratorMetadata": true, // Necessário para metadados com decorators
