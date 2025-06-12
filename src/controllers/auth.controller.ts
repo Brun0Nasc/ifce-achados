@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import UserModel from "../models/User.model";
 import config from "../config";
+import { StringValue } from "ms";
 
 export const login = async (req: Request, res: Response): Promise<void> => {
   const { email, password } = req.body;
@@ -50,8 +51,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     };
 
     const token = jwt.sign(payload, config.jwt.secret, {
-      expiresIn: config.jwt.expiresIn || "1h",
-    });
+      expiresIn: config.jwt.expiresIn as StringValue | number,
+    } );
 
     console.info(`[LOGIN] Login bem-sucedido para ${email}`);
 

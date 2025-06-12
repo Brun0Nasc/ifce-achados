@@ -9,9 +9,15 @@ import { alterarStatusOcorrencia } from "../controllers/item.controller";
 
 const router = Router();
 
-router.post("/cadastro", protect, cadastrarOcorrencia);
-router.get("/consulta", protect, consultarOcorrencias);
-router.get("/historico", protect, consultarHistoricoUsuario);
-router.put("/status", protect, alterarStatusOcorrencia);
+function asyncHandler(fn: any) {
+  return function (req: any, res: any, next: any) {
+    Promise.resolve(fn(req, res, next)).then(() => undefined).catch(next);
+  };
+}
+
+router.post("/cadastro", protect, asyncHandler(cadastrarOcorrencia));
+router.get("/consulta", protect, asyncHandler(consultarOcorrencias));
+router.get("/historico", protect, asyncHandler(consultarHistoricoUsuario));
+router.put("/status", protect, asyncHandler(alterarStatusOcorrencia));
 
 export default router;
