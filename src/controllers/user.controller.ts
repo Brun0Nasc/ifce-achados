@@ -46,14 +46,15 @@ export const registerUser = async (
 export const confirmEmail = async (
   req: Request,
   res: Response
-): Promise<Response> => {
+): Promise<void> => {
   const token = req.query.token as string;
 
   if (!token) {
     console.warn("[CONFIRMAÇÃO] Token não fornecido na URL.");
-    return res
+    res
       .status(400)
       .json({ message: "Token de confirmação não fornecido." });
+    return;
   }
 
   try {
@@ -64,14 +65,16 @@ export const confirmEmail = async (
       console.warn(
         `[CONFIRMAÇÃO] Usuário com ID ${decoded.userId} não encontrado.`
       );
-      return res.status(404).json({ message: "Usuário não encontrado." });
+      res.status(404).json({ message: "Usuário não encontrado." });
+      return;
     }
 
     if (user.isActive) {
       console.info(
         `[CONFIRMAÇÃO] Usuário ${user.email} já tinha confirmado a conta.`
       );
-      return res.status(200).json({ message: "Conta já confirmada." });
+      res.status(200).json({ message: "Conta já confirmada." });
+      return;
     }
 
     user.isActive = true;
@@ -80,9 +83,9 @@ export const confirmEmail = async (
     console.info(
       `[CONFIRMAÇÃO] E-mail de ${user.email} confirmado com sucesso.`
     );
-    return res.status(200).json({ message: "E-mail confirmado com sucesso!" });
+    res.status(200).json({ message: "E-mail confirmado com sucesso!" });
   } catch (err) {
     console.error("[ERRO][CONFIRMAÇÃO] Token inválido ou expirado:", err);
-    return res.status(400).json({ message: "Token inválido ou expirado." });
+    res.status(400).json({ message: "Token inválido ou expirado." });
   }
 };

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import OcorrenciaModel from "../models/Ocorrencia.model";
+import OcorrenciaModel from "../models/ocorrencia.model";
 import { IAuthenticatedRequest } from "../middlewares/auth.middleware";
 
 // Cadastro de Ocorrência
@@ -176,7 +176,7 @@ export const alterarStatusOcorrencia = async (
 
     const permissoesCriador = ["Encontrado", "Entregue", "Cancelado"];
     const ehCriador = ocorrencia.usuario_id.equals(usuario._id);
-    const ehAdmin = usuario.role === "administrativo";
+    const ehAdmin = usuario.role === "admin";
 
     if (!ehAdmin && !ehCriador) {
       return res.status(403).json({

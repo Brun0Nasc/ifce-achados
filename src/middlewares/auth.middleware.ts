@@ -12,7 +12,7 @@ interface JwtPayload {
     role?: string;
 }
 
-export const protect = async (req: IAuthenticatedRequest, res: Response, next: NextFunction): Promise<void | Response> => {
+export const protect = async (req: IAuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     let token;
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -24,7 +24,8 @@ export const protect = async (req: IAuthenticatedRequest, res: Response, next: N
             req.user = await UserModel.findById(decoded.userId).select('-password');
 
             if (!req.user) {
-                 return res.status(401).json({ message: 'Usuário não encontrado.' });
+                res.status(401).json({ message: 'Usuário não encontrado.' });
+                return;
             }
 
             next();
@@ -33,18 +34,22 @@ export const protect = async (req: IAuthenticatedRequest, res: Response, next: N
             console.error('Erro na verificação do token:', error);
 
             if (error instanceof jwt.TokenExpiredError) {
-                return res.status(401).json({ message: 'Token expirado. Faça login novamente.' });
+                res.status(401).json({ message: 'Token expirado. Faça login novamente.' });
+                return;
             }
             if (error instanceof jwt.JsonWebTokenError) {
-                 return res.status(401).json({ message: 'Token inválido.' });
+                 res.status(401).json({ message: 'Token inválido.' });
+                return;
             }
              
-            return res.status(401).json({ message: 'Não autorizado.' });
+            res.status(401).json({ message: 'Não autorizado.' });
+            return;
         }
     }
 
     if (!token) {
-        return res.status(401).json({ message: 'Não autorizado, token não fornecido.' });
+        res.status(401).json({ message: 'Não autorizado, token não fornecido.' });
+        return;
     }
 };
 

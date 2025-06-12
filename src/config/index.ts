@@ -8,10 +8,17 @@ const getEnvVariable = (key: string, defaultValue?: string): string => {
     return value;
 };
 
+function getEnvNumberOrString(key: string, defaultValue: string): string | number {
+  const value = process.env[key] ?? defaultValue;
+  return /^[0-9]+$/.test(value) ? parseInt(value, 10) : value;
+}
+
+
 const config = {
     env: getEnvVariable('NODE_ENV', 'development'),
     port: parseInt(getEnvVariable('PORT', '8080'), 10),
     appName: 'IFCE Achados',
+    baseUrl: getEnvVariable('URL_BASE'),
 
     database: {
         mongoUri: getEnvVariable('MONGODB_URI'),
@@ -19,7 +26,7 @@ const config = {
 
     jwt: {
         secret: getEnvVariable('JWT_SECRET'),
-        expiresIn: getEnvVariable('JWT_EXPIRES_IN', '1d') as string | number,
+        expiresIn: getEnvNumberOrString('JWT_EXPIRES_IN', '1d') as string,
     },
 
     api: {
