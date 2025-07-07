@@ -24,6 +24,7 @@ export const cadastrarOcorrencia = async (
       !ocorrencia.item.nome ||
       !ocorrencia.item.descricao
     ) {
+      console.warn("Dados da ocorrência incompletos:", ocorrencia);
       return res
         .status(400)
         .json({ message: "Dados da ocorrência incompletos." });
