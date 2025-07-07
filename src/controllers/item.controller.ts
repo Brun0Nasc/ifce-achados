@@ -8,38 +8,22 @@ export const cadastrarOcorrencia = async (
   res: Response
 ) => {
   try {
-    if (!req.user) {
+    if (!res.locals.user) {
       return res.status(401).json({ message: "Usuário não autenticado." });
     }
 
-    const { ocorrencia } = req.body;
-
-    if (
-      !ocorrencia ||
-      !ocorrencia.ocorrencia ||
-      !ocorrencia.local ||
-      !ocorrencia.situacao ||
-      !ocorrencia.status ||
-      !ocorrencia.item ||
-      !ocorrencia.item.nome ||
-      !ocorrencia.item.descricao
-    ) {
-      console.warn("Dados da ocorrência incompletos:", ocorrencia);
-      return res
-        .status(400)
-        .json({ message: "Dados da ocorrência incompletos." });
-    }
+    const dados = req.body;
 
     const novaOcorrencia = new OcorrenciaModel({
-      usuario_id: req.user._id,
-      ocorrencia: new Date(ocorrencia.ocorrencia),
-      local: ocorrencia.local,
-      situacao: ocorrencia.situacao,
-      status: ocorrencia.status,
+      usuario_id: res.locals.user.userId,
+      ocorrencia: new Date(dados.ocorrencia),
+      local: dados.local,
+      situacao: dados.situacao,
+      status: dados.status,
       item: {
-        nome: ocorrencia.item.nome,
-        descricao: ocorrencia.item.descricao,
-        imagens: ocorrencia.item.imagens || [],
+        nome: dados.item.nome,
+        descricao: dados.item.descricao,
+        imagens: dados.item.imagens || [],
       },
     });
 
@@ -114,13 +98,13 @@ export const consultarHistoricoUsuario = async (
   res: Response
 ) => {
   try {
-    if (!req.user) {
+    if (!res.locals.user) {
       return res.status(401).json({ message: "Usuário não autenticado." });
     }
 
     // Busca todas as ocorrências do usuário logado
     const ocorrencias = await OcorrenciaModel.find({
-      usuario_id: req.user._id,
+      usuario_id: res.locals.user._id,
     }).lean();
 
     const resposta = ocorrencias.map((o) => ({
@@ -149,7 +133,7 @@ export const alterarStatusOcorrencia = async (
   res: Response
 ) => {
   try {
-    if (!req.user) {
+    if (!res.locals.user) {
       return res
         .status(401)
         .json({ status: "error", message: "Usuário não autenticado." });
@@ -173,7 +157,7 @@ export const alterarStatusOcorrencia = async (
         .json({ status: "error", message: "Ocorrência não encontrada." });
     }
 
-    const usuario = req.user;
+    const usuario = res.locals.user;
 
     const permissoesCriador = ["Encontrado", "Entregue", "Cancelado"];
     const ehCriador = ocorrencia.usuario_id.equals(usuario._id);
