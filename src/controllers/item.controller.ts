@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import OcorrenciaModel from "../models/ocorrencia.model";
 import { IAuthenticatedRequest } from "../middlewares/auth.middleware";
 
@@ -13,25 +13,10 @@ export const cadastrarOcorrencia = async (
     }
 
     const { ocorrencia } = req.body;
-
-    if (
-      !ocorrencia ||
-      !ocorrencia.ocorrencia ||
-      !ocorrencia.local ||
-      !ocorrencia.situacao ||
-      !ocorrencia.status ||
-      !ocorrencia.item ||
-      !ocorrencia.item.nome ||
-      !ocorrencia.item.descricao
-    ) {
-      console.warn("Dados da ocorrência incompletos:", ocorrencia);
-      return res
-        .status(400)
-        .json({ message: "Dados da ocorrência incompletos." });
-    }
+    console.log("Dados recebidos para cadastro:", ocorrencia);
 
     const novaOcorrencia = new OcorrenciaModel({
-      usuario_id: req.user._id,
+      usuario_id: ocorrencia.usuario_id,
       ocorrencia: new Date(ocorrencia.ocorrencia),
       local: ocorrencia.local,
       situacao: ocorrencia.situacao,
