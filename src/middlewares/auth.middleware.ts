@@ -13,21 +13,17 @@ interface JwtPayload {
 }
 
 export const protect = async (req: IAuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    console.log(req.body);
     let token;
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
+            console.log(req.headers);
+            console.log(req.body);
             token = req.headers.authorization.split(' ')[1];
 
             const decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
-
-            req.user = await UserModel.findById(decoded.userId).select('-password');
-
-            if (!req.user) {
-                res.status(401).json({ message: 'Usuário não encontrado.' });
-                return;
-            }
-
+            res.locals.user = decoded;
             next();
 
         } catch (error) {
@@ -55,7 +51,7 @@ export const protect = async (req: IAuthenticatedRequest, res: Response, next: N
 
 export const authorize = (...roles: string[]) => {
     return (req: IAuthenticatedRequest, res: Response, next: NextFunction) => {
-        if (!req.user || !req.user.role || !roles.includes(req.user.role)) {
+        if (!res.locals.user || !res.locals.user.role || !roles.includes(res.locals.user.role)) {
              return res.status(403).json({ message: 'Acesso negado. Perfil não autorizado.' });
         }
         next();
